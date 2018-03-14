@@ -1,0 +1,24 @@
+{
+  "name": "an8val66/phalconit",
+  "description": "Library for expansion the base functional of Phalcon framework.",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Phalconit\\": "src"
+    }
+  },
+  "require": {
+    "php": ">=7.0"
+  },
+  "keywords": [
+    "framework",
+    "phalcon"
+  ],
+  "authors": [
+    {
+      "name": "Anderson Borges",
+      "email": "andersonvaleriano.borges@gmail.com"
+    }
+  ]
+}
