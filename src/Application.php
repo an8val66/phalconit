@@ -2,6 +2,8 @@
 
 namespace Phalconit;
 
+use Exception;
+
 
 class Application extends \Phalcon\Mvc\Application
 {
@@ -34,9 +36,11 @@ class Application extends \Phalcon\Mvc\Application
                 ini_set('display_errors', 1);
                 ini_set('display_startup_errors', 1);
                 error_reporting(-1);
+
+                (new \Phalcon\Debug())->listen();
                 break;
             default:
-                throw new \Exception('Wrong environment variable $env passed: '. $env);
+                throw new Exception('Wrong environment variable $env passed: '. $env);
         }
 
         $this->_configuration = $configuration;
@@ -71,11 +75,64 @@ class Application extends \Phalcon\Mvc\Application
         $loader->registerNamespaces($loadedNamespaces)->register();
     }
 
+    public function registerServices()
+    {
+        $di = $this->getDI();
+        $config = &$this->getConfiguration();
+
+        if (isset($config['services'])) {
+            if (!is_array($config['services'])) {
+                throw new Exception("Config[services] must be a array");
+            }
+
+            if (count($config['services']) > 0) {
+                foreach ($config['services'] as $serviceName => $serviceParams) {
+                    $class = $serviceParams['className'];
+
+                    $shared = false;
+                    $service = false;
+
+                    if (isset($serviceParams['shared'])) {
+                        $shared = (boolean)$serviceParams['shared'];
+                    }
+
+                    if (is_object($class)) {
+                        $shared = true;
+                        $service = $class;
+                    } elseif (is_callable($class)) {
+                        $shared = true;
+                        $service = $class($this, $di);
+                    } elseif (is_string($class)) {
+                        $service = $serviceParams;
+                    }
+
+                    $di->set($serviceName, $service, $shared);
+                }
+            }
+        }
+    }
+
+    /**
+     * Bootstrap
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function bootstrap()
     {
         $this->registerLoader();
+        $this->registerModules($this->getConfiguration()['application']['modules']);
+
+        $this->registerServices();
+
+        return $this;
     }
 
+    /**
+     * Run app
+     *
+     * @param null $uri
+     */
     public function run($uri = null)
     {
         $this->handle($uri)
