@@ -64,8 +64,8 @@ class Application extends \Phalcon\Mvc\Application
             $loadedNamespaces = [];
         }
 
-        foreach ($config['application']['modules'] as $module) {
-            $loadedNamespaces[$module . '\Models'] = $config['paths']['modulesDir'] . $module . '/models';
+        foreach ($config['application']['modules'] as $moduleName => $module) {
+            $loadedNamespaces[ucfirst($moduleName) . '\Models'] = $config['paths']['modulesDir'] . $moduleName . '/models';
         }
 
         if (isset($config['application']['registerDirs'])) {
