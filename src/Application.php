@@ -78,7 +78,7 @@ class Application extends \Phalcon\Mvc\Application
     public function registerServices()
     {
         $di = $this->getDI();
-        $config = &$this->getConfiguration();
+        $config = $this->getConfiguration();
 
         if (isset($config['services'])) {
             if (!is_array($config['services'])) {
@@ -122,6 +122,9 @@ class Application extends \Phalcon\Mvc\Application
     {
         $this->registerLoader();
         $this->registerModules($this->getConfiguration()['application']['modules']);
+
+        $eventsManager = new \Phalcon\Events\Manager();
+        $this->setEventsManager($eventsManager);
 
         $this->registerServices();
 
