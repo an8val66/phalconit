@@ -96,12 +96,12 @@ class Application extends \Phalcon\Mvc\Application
                         $shared = (boolean)$serviceParams['shared'];
                     }
 
-                    if (is_object($class)) {
-                        $shared = true;
-                        $service = $class;
-                    } elseif (is_callable($class)) {
+                    if (is_callable($class)) {
                         $shared = true;
                         $service = $class($this, $di);
+                    } elseif (is_object($class)) {
+                        $shared = true;
+                        $service = $class;
                     } elseif (is_string($class)) {
                         $service = $serviceParams;
                     }
